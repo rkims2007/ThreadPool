@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ThreadPool" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/ThreadPool" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/ThreadPool" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="../../threadpool-master/CondVar.cpp" />
+		<Unit filename="../../threadpool-master/CondVar.h" />
+		<Unit filename="../../threadpool-master/Global.h" />
+		<Unit filename="../../threadpool-master/Makefile" />
+		<Unit filename="../../threadpool-master/Mutex.cpp" />
+		<Unit filename="../../threadpool-master/Mutex.h" />
+		<Unit filename="../../threadpool-master/README.md" />
+		<Unit filename="../../threadpool-master/Task.cpp" />
+		<Unit filename="../../threadpool-master/Task.h" />
+		<Unit filename="../../threadpool-master/ThreadPool.cpp" />
+		<Unit filename="../../threadpool-master/ThreadPool.h" />
+		<Unit filename="../../threadpool-master/bin/example/threadpool_test" />
+		<Unit filename="../../threadpool-master/bin/examplethreadpool_test" />
+		<Unit filename="../../threadpool-master/threadpool_test.cpp" />
+		<Unit filename="Event.h" />
+		<Unit filename="Lock" />
+		<Unit filename="Lock.h" />
+		<Unit filename="Makefile" />
+		<Unit filename="Thread.h" />
+		<Unit filename="ThreadPool.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="main.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -3,8 +3,11 @@
 #include<iostream>
 #include<pthread>
 #include "Lock.h"
-
+#include "Semaphore.h"
+#include "Log.h"
 using namespace std;
+
+
 
 //class GenFunctor
 //{
@@ -57,19 +60,28 @@ class Task
 
 private:
     Funtor          m_FuncPtr;
-    const void*     m_Arg;
+    void*           m_Arg;
     Mutex           m_Lock;
+    pthread_t       m_Thread;
+    bool            m_bIsThreadRunning;
+    bool            m_bIsThdStarted;
+    SemThreadLock   m_SemLock;
+    bool            m_bWantStopThread;
+    SemThreadLock   *m_pParentSem;
 public:
 
 
-    Task(Funtor pFuncPtr,const void*arg):m_FuncPtr(pFuncPtr),m_Arg(arg),m_Lock(PTHREAD_MUTEX_INITIALIZER)
+    Task(SemThreadLock *ptr):m_Lock(PTHREAD_MUTEX_INITIALIZER),m_Thread(-1),m_bIsThreadRunning(false),m_bIsThdStarted(false),m_bWantStopThread(false)
+            ,m_pParentSem(ptr)
     {
 
     }
-    bool Start();
+    bool Create();
+    bool Start(Funtor f_ptr, void*arg);
     bool Stop();
-    bool IsRunnning();
-    void Run();
+    bool IsRunnning(){}
+    void Run(){}
+    friend void* ThreadFunc(void *arg);
 
 
 };
