@@ -9,7 +9,7 @@ private:
       sem_t   m_Sema;
       bool    m_bIsInit;
  public:
-        SemThreadLock():m_Sema(0),m_bIsInit(false)
+        SemThreadLock():m_bIsInit(false)
         {
             sem_init(&m_Sema,0,0);
             m_bIsInit=true;

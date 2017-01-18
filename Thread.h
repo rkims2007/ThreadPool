@@ -1,12 +1,13 @@
 #ifndef THREAD_H_INCLUDED
 #define THREAD_H_INCLUDED
 #include<iostream>
-#include<pthread>
+#include<pthread.h>
 #include "Lock.h"
 #include "Semaphore.h"
 #include "Log.h"
+#include"ThreadPool.h"
 using namespace std;
-
+class ThreadPool;
 
 
 //class GenFunctor
@@ -54,12 +55,13 @@ using namespace std;
 //
 //};
 
-typedef void*(*fptr)(void*) Funtor;
+typedef void*(*fptr)(void*) ;
+
 class Task
 {
 
 private:
-    Funtor          m_FuncPtr;
+    fptr            m_FuncPtr;
     void*           m_Arg;
     Mutex           m_Lock;
     pthread_t       m_Thread;
@@ -67,19 +69,20 @@ private:
     bool            m_bIsThdStarted;
     SemThreadLock   m_SemLock;
     bool            m_bWantStopThread;
-    SemThreadLock   *m_pParentSem;
+    ThreadPool      *m_pParent;
 public:
 
 
-    Task(SemThreadLock *ptr):m_Lock(PTHREAD_MUTEX_INITIALIZER),m_Thread(-1),m_bIsThreadRunning(false),m_bIsThdStarted(false),m_bWantStopThread(false)
-            ,m_pParentSem(ptr)
+    Task(ThreadPool *ptr):m_Thread(-1),m_bIsThreadRunning(false),m_bIsThdStarted(false),m_bWantStopThread(false)
+            ,m_pParent(ptr)
     {
 
     }
+    ~Task();
     bool Create();
-    bool Start(Funtor f_ptr, void*arg);
+    bool Start(fptr f_ptr, void*arg);
     bool Stop();
-    bool IsRunnning(){}
+    bool IsRunnning(){return m_bIsThdStarted;}
     void Run(){}
     friend void* ThreadFunc(void *arg);
 

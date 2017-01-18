@@ -1,8 +1,29 @@
-include "Thread.h"
+#include "Thread.h"
+void *ThreadFunc(void* arg)
+{
+    Task *ptr = (Task*)arg;
 
+    while(true)
+    {
+        ptr->m_SemLock.Wait();
+        ScopedLock sc(&ptr->m_Lock);
+        if(ptr->m_bWantStopThread || ptr->m_bIsThreadRunning==false)
+        {
+            pthread_exit(NULL);
+        }
+        ptr->m_FuncPtr(ptr->m_Arg);
+        ptr->m_bIsThdStarted = false;
+        ptr->m_pParent->Notify();
+    }
+}
+Task::~Task()
+{
+    Stop();
+
+}
 bool Task::Create()
 {
-    ScopedLock sc(&m_Lock);
+    //ScopedLock sc(&m_Lock);
     if(m_Thread !=-1)
     {
         LOGE("Thread is already created");
@@ -17,9 +38,9 @@ bool Task::Create()
     }
     return true;
 }
-bool Task::Start(Funtor f_ptr, void*arg)
+bool Task::Start(fptr f_ptr, void*arg)
 {
-    ScopedLock sc(&m_Lock);
+    //ScopedLock sc(&m_Lock);
     if(m_bIsThreadRunning==false)
     {
         LOGE("thrad is not running state");
@@ -39,7 +60,7 @@ bool Task::Start(Funtor f_ptr, void*arg)
 }
 bool Task::Stop()
 {
-    ScopedLock(&m_Lock)
+    //ScopedLock sc(&m_Lock);
     if(m_bIsThreadRunning==false)
     {
         LOGE("Thread is Already stopped ");
@@ -54,23 +75,6 @@ bool Task::Stop()
     m_bIsThreadRunning=false;
     m_bIsThdStarted =false;
     m_bWantStopThread = true;
-    pthread_join(&m_Thread,NULL);
+    pthread_join(m_Thread,NULL);
     return true;
-}
-void *ThreadFunc(void* arg)
-{
-    Task *ptr = (Task*)arg;
-
-    while(true)
-    {
-        ptr->m_SemLock.Wait();
-        ScopedLock sc(&ptr->m_Lock);
-        if(ptr->m_bWantStopThread || ptr->m_bIsThreadRunning==false)
-        {
-            pthread_exit(NULL);
-        }
-        ptr->m_FuncPtr(ptr->m_arg);
-        ptr->m_bIsThdStarted = false;
-        ptr->m_pParentSem->Signal();
-    }
 }

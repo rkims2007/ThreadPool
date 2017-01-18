@@ -1,27 +1,50 @@
 #ifndef LOCK_INCLUDED
 #define LOCK_INCLUDED
 
-#include<pthread>
+#include<pthread.h>
+#include "Log.h"
 
 class Mutex
 {
 private:
-    pthraed_mutex_t  m_Mutex;
-    bool             m_bIsLocked;
+    pthread_mutex_t  m_Mutex;
+
 public:
-    Mutex();
-    bool Lock();
-    bool UnLock();
-    bool IsLocked();
+    Mutex():m_Mutex(PTHREAD_MUTEX_INITIALIZER)
+    {
+
+    }
+    bool Lock()
+    {
+        if(pthread_mutex_lock(&m_Mutex)!=0)
+        {
+            LOGE("failed to acquire lock");
+            return false;
+        }
+        return true;
+    }
+    bool UnLock()
+    {
+        if(pthread_mutex_unlock(&m_Mutex)!=0)
+        {
+            LOGE("failed in unlock");
+            return false;
+        }
+        return true;
+    }
+    ~Mutex()
+    {
+        pthread_mutex_destroy(&m_Mutex);
+    }
 
 };
 
 class ScopedLock
 {
 private:
-    const Mutex * m_pScopedLock
+     Mutex * m_pScopedLock;
 public:
-        ScopedLock(const Mutex *ptr):m_pScopedLock(ptr)
+        ScopedLock( Mutex *ptr):m_pScopedLock(ptr)
         {
             if(m_pScopedLock)
             {

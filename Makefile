@@ -1,18 +1,22 @@
+appname := threadpool
 # the compiler: gcc for C program, define as g++ for C++
-  CC = g++
+  CXX = g++
 
   # compiler flags:
   #  -g    adds debugging information to the executable file
   #  -Wall turns on most, but not all, compiler warnings
-  CFLAGS  = -g3 -Wall -std=c++11
+  CXXFLAGS  = -g3 -Wall -std=c++11
+  LDLIBS = -lm -lpthread
+
 
   # the build target executable:
-  TARGET = main
+  srcfiles := $(shell find . -maxdepth 1 -name "*.cpp")
+  objects  := $(patsubst %.cpp, %.o, $(srcfiles))
 
-  all: $(TARGET)
+  all: $(appname)
 
-  $(TARGET): $(TARGET).cpp
-	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).cpp
 
-  clean:
-	$(RM) $(TARGET)
+$(appname): $(objects)
+		$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(appname) $(objects) $(LDLIBS)
+
+

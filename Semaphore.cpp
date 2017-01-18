@@ -1,4 +1,5 @@
 #include"Semaphore.h"
+#include "Log.h"
 
 SemThreadLock::~SemThreadLock()
 {
