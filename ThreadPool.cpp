@@ -15,11 +15,13 @@ ThreadPool::~ThreadPool()
 
 bool ThreadPool::InitializePool(const int poollimit)
 {
+    ScopedLock sc(&m_PoolLock);
     m_MaxPool = poollimit;
     return true;
 }
 bool ThreadPool::AddTask(fptr ptr,void *arg)
 {
+    ScopedLock sc(&m_PoolLock);
     int TaskSize = m_Task.size();
     if(TaskSize <m_MaxPool)
     {
@@ -37,21 +39,15 @@ bool ThreadPool::AddTask(fptr ptr,void *arg)
 
    return true;
 }
-void ThreadPool::Notify()
+void ThreadPool::Notify(Task *TaskPtr)
 {
+    ScopedLock sc(&m_PoolLock);
     if(m_TaskQ.empty())
     {
         return;
     }
     TaskElement *ptr = m_TaskQ.front();
     m_TaskQ.pop_front();
-    for(int i=0;i<m_Task.size();i++)
-    {
-        Task *tr = m_Task[i];
-        if(tr->IsRunnning()==false)
-        {
-            tr->Start(ptr->m_fptr,ptr->m_arg);
-        }
-    }
+    TaskPtr->Start(ptr->m_fptr,ptr->m_arg);
 
 }

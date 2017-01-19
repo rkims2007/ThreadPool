@@ -6,14 +6,16 @@ void *ThreadFunc(void* arg)
     while(true)
     {
         ptr->m_SemLock.Wait();
-        ScopedLock sc(&ptr->m_Lock);
+        ptr->m_Lock.Lock();
         if(ptr->m_bWantStopThread || ptr->m_bIsThreadRunning==false)
         {
+            ptr->m_Lock.UnLock();
             pthread_exit(NULL);
         }
         ptr->m_FuncPtr(ptr->m_Arg);
         ptr->m_bIsThdStarted = false;
-        ptr->m_pParent->Notify();
+        ptr->m_Lock.UnLock();
+        ptr->m_pParent->Notify(ptr);
     }
 }
 Task::~Task()
@@ -23,7 +25,7 @@ Task::~Task()
 }
 bool Task::Create()
 {
-    //ScopedLock sc(&m_Lock);
+    ScopedLock sc(&m_Lock);
     if(m_Thread !=-1)
     {
         LOGE("Thread is already created");
@@ -40,7 +42,7 @@ bool Task::Create()
 }
 bool Task::Start(fptr f_ptr, void*arg)
 {
-    //ScopedLock sc(&m_Lock);
+    ScopedLock sc(&m_Lock);
     if(m_bIsThreadRunning==false)
     {
         LOGE("thrad is not running state");
@@ -60,7 +62,7 @@ bool Task::Start(fptr f_ptr, void*arg)
 }
 bool Task::Stop()
 {
-    //ScopedLock sc(&m_Lock);
+    ScopedLock sc(&m_Lock);
     if(m_bIsThreadRunning==false)
     {
         LOGE("Thread is Already stopped ");

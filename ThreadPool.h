@@ -27,12 +27,13 @@ private:
 
     vector<Task*>  m_Task;
     deque<TaskElement*>  m_TaskQ;
+    Mutex   m_PoolLock;
  public:
         bool InitializePool(const int poolLimit);
         ThreadPool();
         ~ThreadPool();
         bool AddTask(fptr ptr,void*arg);
-        void Notify();
+        void Notify(Task *TaskPtr);
 
 };
 

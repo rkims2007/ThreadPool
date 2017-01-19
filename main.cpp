@@ -78,9 +78,15 @@
 
 void *Func(void*arg)
 {
+    char path[1000] = {0};
+    sprintf(path,"./temp/%u",pthread_self());
 
+
+    FILE* fp = fopen(path,"a+");
     for(int i=0;i<10;i++)
     {
+        fprintf(fp,"%d\n",i);
+        fflush(fp);
         cout<<pthread_self()<<"  "<<i<<endl;
     }
 }
@@ -89,12 +95,12 @@ int main()
 {
 
     ThreadPool *ptr =new ThreadPool();
-    ptr->InitializePool(4);
+    ptr->InitializePool(7);
     ptr->AddTask(Func,NULL);
      ptr->AddTask(Func,NULL);
       ptr->AddTask(Func,NULL);
        ptr->AddTask(Func,NULL);
-       while(1);
+      while(1);
        delete ptr;
        return 0;
  //a.call();
