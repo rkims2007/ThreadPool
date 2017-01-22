@@ -5,17 +5,29 @@ void *ThreadFunc(void* arg)
 
     while(true)
     {
+        cout<<"thread is in waiting condition"<<pthread_self()<<endl;
         ptr->m_SemLock.Wait();
+
         ptr->m_Lock.Lock();
+        //cout<<"krishna "<<endl;
         if(ptr->m_bWantStopThread || ptr->m_bIsThreadRunning==false)
         {
             ptr->m_Lock.UnLock();
             pthread_exit(NULL);
         }
-        ptr->m_FuncPtr(ptr->m_Arg);
-        ptr->m_bIsThdStarted = false;
+        while(ptr->m_queue.empty()==false)
+        {
+            Task::ThreadElement_t   taskelement = ptr->m_queue.front();
+            ptr->m_queue.pop_front();
+            cout<<ptr<<"in thread excution "<<pthread_self()<<endl;
+
+
+            taskelement.m_Fptr(taskelement.m_Arg);
+
+        }
+        ptr->m_bIsThdStarted=false;
         ptr->m_Lock.UnLock();
-        ptr->m_pParent->Notify(ptr);
+
     }
 }
 Task::~Task()
@@ -40,7 +52,7 @@ bool Task::Create()
     }
     return true;
 }
-bool Task::Start(fptr f_ptr, void*arg)
+bool Task::Start(fptr ptr,void*arg)
 {
     ScopedLock sc(&m_Lock);
     if(m_bIsThreadRunning==false)
@@ -53,12 +65,21 @@ bool Task::Start(fptr f_ptr, void*arg)
         LOGE("Thread is not creatd yet.Please call create() funcy");
         return false;
     }
-    m_FuncPtr = f_ptr;
-    m_Arg = arg;
-
-    //send the signal
-    return m_SemLock.Signal();
-
+    ThreadElement_t el;
+    el.m_Fptr = ptr;
+    el.m_Arg = arg;
+    if(m_bIsThdStarted==false)
+    {
+        cout<<"no task is for thread"<<endl;
+        m_bIsThdStarted =true;
+        m_queue.push_back(el);
+        m_SemLock.Signal();
+        return true;
+    }
+    cout<<"queue is running put it into the queue"<<this<<endl;
+    m_queue.push_back(el);
+    return true;
+    //return m_SemLock.Signal();
 }
 bool Task::Stop()
 {

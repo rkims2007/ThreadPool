@@ -25,8 +25,8 @@ private:
     int           m_MaxPool;
 
 
-    vector<Task*>  m_Task;
-    deque<TaskElement*>  m_TaskQ;
+
+    deque<Task*>  m_TaskQ;
     Mutex   m_PoolLock;
  public:
         bool InitializePool(const int poolLimit);

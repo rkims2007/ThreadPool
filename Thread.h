@@ -6,6 +6,7 @@
 #include "Semaphore.h"
 #include "Log.h"
 #include"ThreadPool.h"
+#include<deque>
 using namespace std;
 class ThreadPool;
 
@@ -61,20 +62,25 @@ class Task
 {
 
 private:
-    fptr            m_FuncPtr;
-    void*           m_Arg;
+    typedef struct ThreadElement
+    {
+        fptr  m_Fptr;
+        void* m_Arg;
+    }ThreadElement_t;
+
     Mutex           m_Lock;
     pthread_t       m_Thread;
     bool            m_bIsThreadRunning;
     bool            m_bIsThdStarted;
     SemThreadLock   m_SemLock;
     bool            m_bWantStopThread;
-    ThreadPool      *m_pParent;
+
+    deque<ThreadElement_t>  m_queue;
 public:
 
 
-    Task(ThreadPool *ptr):m_Thread(-1),m_bIsThreadRunning(false),m_bIsThdStarted(false),m_bWantStopThread(false)
-            ,m_pParent(ptr)
+    Task():m_Thread(-1),m_bIsThreadRunning(false),m_bIsThdStarted(false),m_bWantStopThread(false)
+
     {
 
     }
